@@ -1,11 +1,5 @@
 from tkinter import *
 
-lasx, lasy = 0, 0
-canvas_width, canvas_height = 300, 300
-segment_width, segment_height = 100, 100
-app = Tk()
-app.geometry("400x400")
-
 
 def get_x_and_y(event):
     global lasx, lasy
@@ -18,29 +12,7 @@ def draw_smth(event):
     lasx, lasy = event.x, event.y
 
 
-canvas = Canvas(app, bg='white', height=canvas_height, width=canvas_width)
-
-# canvas.pack(anchor='nw', fill='both', expand=1)
-canvas.place(x=50, y=10)
-
-canvas.bind("<Button-1>", get_x_and_y)
-canvas.bind("<B1-Motion>", draw_smth)
-
-
-def get_segment(pixels_color_matrix, row, col):
-    black_pixels = 0
-    for i in range(segment_height):
-        for j in range(segment_width):
-            color = pixels_color_matrix[i + row * segment_height][j + col * segment_width]
-            if color == 1:
-                black_pixels += 1
-
-    if black_pixels >= (segment_width * segment_width) / 2:
-        return 1
-    return 0
-
-
-def to_do_some_shit():
+def start_btn():
     pixels_color_matrix = get_matrix_pixels()
     vector = []
     for i in range(int(canvas_height / segment_height)):
@@ -85,7 +57,36 @@ def get_pixel_color(x, y):
     return "white"  # default color
 
 
-btn = Button(text="start", command=to_do_some_shit)
+def get_segment(pixels_color_matrix, row, col):
+    black_pixels = 0
+    for i in range(segment_height):
+        for j in range(segment_width):
+            color = pixels_color_matrix[i + row * segment_height][j + col * segment_width]
+            if color == 1:
+                black_pixels += 1
+
+    if black_pixels >= (segment_width * segment_width) / 2:
+        return 1
+    return 0
+
+
+lasx, lasy = 0, 0
+canvas_width, canvas_height = 300, 300
+segment_width, segment_height = 100, 100
+
+app = Tk()
+
+app.geometry("400x400")
+
+canvas = Canvas(app, bg='white', height=canvas_height, width=canvas_width)
+# canvas.pack(anchor='nw', fill='both', expand=1)
+
+canvas.place(x=50, y=10)
+canvas.bind("<Button-1>", get_x_and_y)
+
+canvas.bind("<B1-Motion>", draw_smth)
+
+btn = Button(text="start", command=start_btn)
 btn.place(x=10, y=330)
 
 app.mainloop()
