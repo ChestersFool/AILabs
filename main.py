@@ -9,7 +9,8 @@ def get_x_and_y(event):
 
 def draw_smth(event):
     global lasx, lasy
-    canvas.create_line((lasx, lasy, event.x, event.y), fill='black', width=5)
+    canvas.create_oval(event.x - 3, event.y - 3, event.x + 3, event.y + 3, fill='black')
+    # canvas.create_line(lasx, lasy, event.x, event.y, width=5)
     lasx, lasy = event.x, event.y
 
 
@@ -138,7 +139,7 @@ def clear_canvas():
 
 lasx, lasy = 0, 0
 canvas_width, canvas_height = 300, 300
-segment_width, segment_height = 60, 60
+segment_width, segment_height = 30, 30
 vector_normalized = []
 
 app = Tk()
