@@ -8,7 +8,7 @@ def get_x_and_y(event):
 
 def draw_smth(event):
     global lasx, lasy
-    canvas.create_line((lasx, lasy, event.x, event.y), fill='black', width=10)
+    canvas.create_line((lasx, lasy, event.x, event.y), fill='black', width=5)
     lasx, lasy = event.x, event.y
 
 
@@ -19,6 +19,22 @@ def start_btn():
         for j in range(int(canvas_width / segment_width)):
             vector.append(get_segment(pixels_color_matrix, i, j))
     print(vector)
+
+    vector_normalized = []
+    max_vec = max(vector)
+
+    for elem in vector:
+        vector_normalized.append(elem / max_vec)
+
+    print(vector_normalized)
+
+    digit = text.get("1.0", "end-1c")
+
+    # write to the file
+    f = open("models.txt", "a")
+    f.write(' '.join(map(str, vector_normalized)))
+    f.write(' ' + digit)
+    f.close()
 
 
 def get_matrix_pixels():
@@ -65,28 +81,37 @@ def get_segment(pixels_color_matrix, row, col):
             if color == 1:
                 black_pixels += 1
 
-    if black_pixels >= (segment_width * segment_width) / 2:
-        return 1
-    return 0
+    return black_pixels
 
+
+def clear_canvas():
+    canvas.delete('all')
+
+def search_digit():
+    pass
 
 lasx, lasy = 0, 0
 canvas_width, canvas_height = 300, 300
-segment_width, segment_height = 100, 100
+segment_width, segment_height = 60, 60
 
 app = Tk()
-
 app.geometry("400x400")
 
 canvas = Canvas(app, bg='white', height=canvas_height, width=canvas_width)
-# canvas.pack(anchor='nw', fill='both', expand=1)
-
 canvas.place(x=50, y=10)
 canvas.bind("<Button-1>", get_x_and_y)
-
 canvas.bind("<B1-Motion>", draw_smth)
 
 btn = Button(text="start", command=start_btn)
 btn.place(x=10, y=330)
+
+search_digit_btn = Button(text="search", command=search_digit)
+search_digit_btn.place(x=150, y=330)
+
+clear_btn = Button(text="clear", command=clear_canvas)
+clear_btn.place(x=60, y=330)
+
+text = Text(height=1, width=5)
+text.place(x=100, y=330)
 
 app.mainloop()
