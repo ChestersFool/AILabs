@@ -5,8 +5,6 @@ from tkinter import *
 
 def read_vectors_file():
     # read the file
-    # digit - vector
-    vectors = {}
     f = open("models.txt", "r")
     i = 0
 
@@ -18,7 +16,6 @@ def read_vectors_file():
 
     f.close()
     # print("\n\n", vectors)
-    return vectors
 
 
 def get_x_and_y(event):
@@ -151,7 +148,8 @@ canvas_width, canvas_height = 300, 300
 segment_width, segment_height = 30, 30
 vector_normalized = []
 # digit - vector
-vectors = read_vectors_file()
+vectors = {}
+read_vectors_file()
 
 app = Tk()
 app.configure(bg='grey')
