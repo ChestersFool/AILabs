@@ -143,6 +143,7 @@ segment_width, segment_height = 30, 30
 vector_normalized = []
 
 app = Tk()
+app.configure(bg='grey')
 app.geometry("400x400")
 
 canvas = Canvas(app, bg='white', height=canvas_height, width=canvas_width)
