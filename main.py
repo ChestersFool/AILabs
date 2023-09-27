@@ -1,5 +1,24 @@
 import math
+import random
 from tkinter import *
+
+
+def read_vectors_file():
+    # read the file
+    # digit - vector
+    vectors = {}
+    f = open("models.txt", "r")
+    i = 0
+
+    for line in f:
+        vector = line.split(' ')
+        digit = vector.pop(len(vector) - 1).replace('\n', '')
+        vectors[i] = [vector, float(digit)]
+        i = i + 1
+
+    f.close()
+    # print("\n\n", vectors)
+    return vectors
 
 
 def get_x_and_y(event):
@@ -92,25 +111,13 @@ def write_vector_file():
     f.write(' ' + digit + '\n')
     f.close()
 
+    vectors[random.randint(2000, 10000)] = [vector_normalized, digit]
+
 
 def search_digit():
     read_vector_canvas()
 
-    # digit - vector
-    vectors = {}
-
-    # read the file
-    f = open("models.txt", "r")
-    i = 0
-    for line in f:
-        vector = line.split(' ')
-        digit = vector.pop(len(vector) - 1).replace('\n', '')
-        vectors[i] = [vector, float(digit)]
-        i = i + 1
-
-    f.close()
-    # print("\n\n", vectors)
-
+    print(vectors)
     # get distance
     # search suitable
     # distance - digit
@@ -129,8 +136,10 @@ def search_digit():
 
         dist[dist_elem] = float(vector[1])
 
-    print(dist)
+    # print(dist)
     print("Answer: ", dist.get(minimum))
+    answer = "Answer: " + str(int(dist.get(minimum)))
+    answer_lbl.config(text=answer)
 
 
 def clear_canvas():
@@ -141,6 +150,8 @@ lasx, lasy = 0, 0
 canvas_width, canvas_height = 300, 300
 segment_width, segment_height = 30, 30
 vector_normalized = []
+# digit - vector
+vectors = read_vectors_file()
 
 app = Tk()
 app.configure(bg='grey')
@@ -165,5 +176,8 @@ clear_btn.place(x=160, y=330)
 
 search_digit_btn = Button(text="search", command=search_digit)
 search_digit_btn.place(x=200, y=330)
+
+answer_lbl = Label(text="Answer: ")
+answer_lbl.place(x=250, y=330)
 
 app.mainloop()
