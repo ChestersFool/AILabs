@@ -100,10 +100,12 @@ def search_digit():
 
     # read the file
     f = open("models.txt", "r")
+    i = 0
     for line in f:
         vector = line.split(' ')
         digit = vector.pop(len(vector) - 1).replace('\n', '')
-        vectors[digit] = vector
+        vectors[i] = [vector, float(digit)]
+        i = i + 1
 
     f.close()
     # print("\n\n", vectors)
@@ -117,14 +119,14 @@ def search_digit():
     for key, vector in vectors.items():
         dist_elem = 0
 
-        for i in range(len(vector)):
-            d = math.pow(float(vector.__getitem__(i)) - vector_normalized.__getitem__(i), 2)
+        for i in range(len(vector[0])):
+            d = math.pow(float(vector[0].__getitem__(i)) - vector_normalized.__getitem__(i), 2)
             dist_elem += d
 
         if dist_elem < minimum:
             minimum = dist_elem
 
-        dist[dist_elem] = float(key)
+        dist[dist_elem] = float(vector[1])
 
     print(dist)
     print("Answer: ", dist.get(minimum))
