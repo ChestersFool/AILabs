@@ -1,3 +1,4 @@
+import math
 from tkinter import *
 
 
@@ -12,29 +13,24 @@ def draw_smth(event):
     lasx, lasy = event.x, event.y
 
 
-def start_btn():
+def read_vector_canvas():
     pixels_color_matrix = get_matrix_pixels()
     vector = []
+
     for i in range(int(canvas_height / segment_height)):
         for j in range(int(canvas_width / segment_width)):
             vector.append(get_segment(pixels_color_matrix, i, j))
-    print(vector)
 
-    vector_normalized = []
+    print("canvas vector: ", vector)
+
+    # vector_normalized = []
     max_vec = max(vector)
+    vector_normalized.clear()
 
     for elem in vector:
         vector_normalized.append(elem / max_vec)
 
-    print(vector_normalized)
-
-    digit = text.get("1.0", "end-1c")
-
-    # write to the file
-    f = open("models.txt", "a")
-    f.write(' '.join(map(str, vector_normalized)))
-    f.write(' ' + digit)
-    f.close()
+    print("canvas normalized vector: ", vector_normalized)
 
 
 def get_matrix_pixels():
@@ -48,8 +44,8 @@ def get_matrix_pixels():
             else:
                 color = 1
             pixels_color_array.append(color)
-            print(color, end="")
-        print()
+            # print(color, end="")
+        # print()
         pixels_color_matrix.append(pixels_color_array)
 
     return pixels_color_matrix
@@ -84,15 +80,64 @@ def get_segment(pixels_color_matrix, row, col):
     return black_pixels
 
 
+def write_vector_file():
+    read_vector_canvas()
+
+    digit = text.get("1.0", "end-1c")
+
+    # write to the file
+    f = open("models.txt", "a")
+    f.write(' '.join(map(str, vector_normalized)))
+    f.write(' ' + digit + '\n')
+    f.close()
+
+
+def search_digit():
+    read_vector_canvas()
+
+    # digit - vector
+    vectors = {}
+
+    # read the file
+    f = open("models.txt", "r")
+    for line in f:
+        vector = line.split(' ')
+        digit = vector.pop(len(vector) - 1).replace('\n', '')
+        vectors[digit] = vector
+
+    f.close()
+    # print("\n\n", vectors)
+
+    # get distance
+    # search suitable
+    # distance - digit
+    dist = {}
+    minimum = 1000
+
+    for key, vector in vectors.items():
+        dist_elem = 0
+
+        for i in range(len(vector)):
+            d = math.pow(float(vector.__getitem__(i)) - vector_normalized.__getitem__(i), 2)
+            dist_elem += d
+
+        if dist_elem < minimum:
+            minimum = dist_elem
+
+        dist[dist_elem] = float(key)
+
+    print(dist)
+    print("Answer: ", dist.get(minimum))
+
+
 def clear_canvas():
     canvas.delete('all')
 
-def search_digit():
-    pass
 
 lasx, lasy = 0, 0
 canvas_width, canvas_height = 300, 300
 segment_width, segment_height = 60, 60
+vector_normalized = []
 
 app = Tk()
 app.geometry("400x400")
@@ -102,16 +147,19 @@ canvas.place(x=50, y=10)
 canvas.bind("<Button-1>", get_x_and_y)
 canvas.bind("<B1-Motion>", draw_smth)
 
-btn = Button(text="start", command=start_btn)
-btn.place(x=10, y=330)
+# btn = Button(text="write", command=read_vector_canvas)
+# btn.place(x=10, y=330)
 
-search_digit_btn = Button(text="search", command=search_digit)
-search_digit_btn.place(x=150, y=330)
+write_btn = Button(text='write', command=write_vector_file)
+write_btn.place(x=80, y=330)
+
+text = Text(height=1, width=4)
+text.place(x=120, y=330)
 
 clear_btn = Button(text="clear", command=clear_canvas)
-clear_btn.place(x=60, y=330)
+clear_btn.place(x=160, y=330)
 
-text = Text(height=1, width=5)
-text.place(x=100, y=330)
+search_digit_btn = Button(text="search", command=search_digit)
+search_digit_btn.place(x=200, y=330)
 
 app.mainloop()
