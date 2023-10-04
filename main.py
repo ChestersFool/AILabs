@@ -179,3 +179,4 @@ answer_lbl = Label(text="Answer: ")
 answer_lbl.place(x=250, y=330)
 
 app.mainloop()
+# Знаходити середній вектор по кожній цифрі (групі)
