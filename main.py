@@ -3,21 +3,6 @@ import random
 from tkinter import *
 
 
-def read_vectors_file():
-    # read the file
-    f = open("models.txt", "r")
-    i = 0
-
-    for line in f:
-        vector = line.split(' ')
-        digit = vector.pop(len(vector) - 1).replace('\n', '')
-        vectors[i] = [vector, float(digit)]
-        i = i + 1
-
-    f.close()
-    # print("\n\n", vectors)
-
-
 def get_x_and_y(event):
     global lasx, lasy
     lasx, lasy = event.x, event.y
@@ -28,6 +13,35 @@ def draw_smth(event):
     canvas.create_oval(event.x - 3, event.y - 3, event.x + 3, event.y + 3, fill='black')
     # canvas.create_line(lasx, lasy, event.x, event.y, width=5)
     lasx, lasy = event.x, event.y
+
+
+def read_vectors_file():
+    # read the file
+    f = open("models.txt", "r")
+    i = 0
+
+    for line in f:
+        vector = line.split(' ')
+        digit = vector.pop(len(vector) - 1).replace('\n', '')
+        vectors_from_file[i] = [vector, float(digit)]
+        i = i + 1
+
+    f.close()
+    # print("\n\n", vectors)
+
+
+def write_vector_file():
+    read_vector_canvas()
+
+    digit = text.get("1.0", "end-1c")
+
+    # write to the file
+    f = open("models.txt", "a")
+    f.write(' '.join(map(str, vector_normalized)))
+    f.write(' ' + digit + '\n')
+    f.close()
+
+    vectors_from_file[random.randint(2000, 10000)] = [vector_normalized, digit]
 
 
 def read_vector_canvas():
@@ -97,31 +111,63 @@ def get_segment(pixels_color_matrix, row, col):
     return black_pixels
 
 
-def write_vector_file():
-    read_vector_canvas()
+def average_vectors():
+    amount_of_each_digit = []
+    vectors = []
 
-    digit = text.get("1.0", "end-1c")
+    for i in range(0, 10):
+        amount_of_each_digit.append(0)
+        sum_vector = []
 
-    # write to the file
-    f = open("models.txt", "a")
-    f.write(' '.join(map(str, vector_normalized)))
-    f.write(' ' + digit + '\n')
-    f.close()
+        for key, vector in vectors_from_file.items():
+            if int(vector[1]) != int(i):
+                continue
 
-    vectors[random.randint(2000, 10000)] = [vector_normalized, digit]
+            amount_of_each_digit[i] += 1
+            k = 0
+
+            for elem in vector[0]:
+                try:
+                    sum_vector[k] += float(elem)
+                    k += 1
+                except IndexError:
+                    sum_vector.append(0)
+                    sum_vector[k] = float(elem)
+                    k += 1
+
+        vectors.append(sum_vector)
+
+    for i in range(0, 10):
+        if amount_of_each_digit[i] == 0:
+            continue
+
+        for j in range(len(vectors[i])):
+            vectors[i][j] /= amount_of_each_digit[i]
+        i += 1
+
+    new_vectors = {}
+    for i in range(0, 10):
+        if amount_of_each_digit[i] == 0:
+            continue
+        new_vectors[i] = [vectors[i], i]
+
+    return new_vectors
 
 
 def search_digit():
     read_vector_canvas()
 
-    print(vectors)
+    # print(vectors_from_file)
+    new_vectors = average_vectors()
+    print(new_vectors)
     # get distance
     # search suitable
     # distance - digit
     dist = {}
     minimum = 1000
 
-    for key, vector in vectors.items():
+    # you can change new_vectors to vectors_from_file
+    for key, vector in new_vectors.items():
         dist_elem = 0
 
         for i in range(len(vector[0])):
@@ -144,11 +190,11 @@ def clear_canvas():
 
 
 lasx, lasy = 0, 0
-canvas_width, canvas_height = 300, 300
+canvas_width, canvas_height = 120, 210
 segment_width, segment_height = 30, 30
 vector_normalized = []
 # digit - vector
-vectors = {}
+vectors_from_file = {}
 read_vectors_file()
 
 app = Tk()
@@ -156,7 +202,7 @@ app.configure(bg='grey')
 app.geometry("400x400")
 
 canvas = Canvas(app, bg='white', height=canvas_height, width=canvas_width)
-canvas.place(x=50, y=10)
+canvas.place(x=(400 - canvas_width) / 2, y=(400 - canvas_height) / 2)
 canvas.bind("<Button-1>", get_x_and_y)
 canvas.bind("<B1-Motion>", draw_smth)
 
