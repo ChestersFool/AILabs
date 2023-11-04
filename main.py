@@ -154,7 +154,7 @@ def average_vectors():
     return new_vectors
 
 
-def search_digit():
+def search_digit_classic():
     read_vector_canvas()
 
     # print(vectors_from_file)
@@ -185,6 +185,73 @@ def search_digit():
     answer_lbl.config(text=answer)
 
 
+def rosenblad_init():
+    for i in vectors_from_file.get(0)[0]:
+        w.append(random.random())
+
+    print(process_rosenblad(vectors_from_file.values()))
+    print(w)
+
+
+def process_rosenblad(vector_digit):
+    global w, b
+    for vector_maybe_digit in vector_digit:
+        # print(vector)
+        d = 0
+        vector = []
+        digit = 0
+
+        if len(vector_maybe_digit) == 2:
+            vector = vector_maybe_digit[0]
+            digit = vector_maybe_digit[1]
+            if digit == 1:
+                d = -1
+            else:  # 2
+                d = 1
+        else:
+            vector = vector_maybe_digit
+
+        while True:
+            y = -b
+            for i in range(len(vector)):
+                y += float(vector[i]) * float(w[i])
+
+            print("number: ", digit, "; y(before): ", y, "; d: ", d, end=" ")
+
+            if y < 0:
+                y = -1
+            else:
+                y = 1
+            print("; y(): ", y)
+
+            if d == 0:
+                return y
+
+            if y != d:
+                w_new = []
+                r = 0.4
+
+                for i in range(len(w)):
+                    w_new.append(float(w[i]) + r * (d - y) * float(vector[i]))
+
+                w = w_new
+            else:
+                break
+
+
+def search_digit_rosenblad():
+    read_vector_canvas()
+    answer = process_rosenblad([vector_normalized])
+    print("y(-1:1 ; 1:2): ", answer)
+
+    if answer == -1:
+        answer = "Answer: 1"
+    else:
+        answer = "Answer: 2"
+
+    answer_lbl.config(text=answer)
+
+
 def clear_canvas():
     canvas.delete('all')
 
@@ -196,6 +263,10 @@ vector_normalized = []
 # digit - vector
 vectors_from_file = {}
 read_vectors_file()
+
+b = 4.1
+w = []
+rosenblad_init()
 
 app = Tk()
 app.configure(bg='grey')
@@ -218,10 +289,11 @@ text.place(x=120, y=330)
 clear_btn = Button(text="clear", command=clear_canvas)
 clear_btn.place(x=160, y=330)
 
-search_digit_btn = Button(text="search", command=search_digit)
+search_digit_btn = Button(text="search", command=search_digit_rosenblad)
 search_digit_btn.place(x=200, y=330)
 
 answer_lbl = Label(text="Answer: ")
 answer_lbl.place(x=250, y=330)
 
+# print(vectors_from_file)
 app.mainloop()
