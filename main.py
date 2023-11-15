@@ -252,6 +252,30 @@ def search_digit_rosenblad():
     answer_lbl.config(text=answer)
 
 
+def hopfild_init():
+    global w
+
+    vectors = vectors_from_file.values()
+    n = len(vectors)
+
+    for i in range(n):
+        w_line = []
+
+        for j in range(n):
+            if i == j:
+                w_line.append(0)
+                continue
+
+            sum = 0
+            for vector in vectors:
+                sum += float(vector[0][i]) * float(vector[0][j])
+            w_line.append(sum)
+
+        w.append(w_line)
+
+    print(w)
+
+
 def clear_canvas():
     canvas.delete('all')
 
@@ -264,9 +288,12 @@ vector_normalized = []
 vectors_from_file = {}
 read_vectors_file()
 
-b = 4.1
+# b = 4.1
+# w = []
+# rosenblad_init()
+
 w = []
-rosenblad_init()
+hopfild_init()
 
 app = Tk()
 app.configure(bg='grey')
